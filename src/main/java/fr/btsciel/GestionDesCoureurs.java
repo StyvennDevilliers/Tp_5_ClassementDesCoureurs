@@ -1,7 +1,8 @@
 package fr.btsciel;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import clavier.In;
+
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,40 +12,111 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 public class GestionDesCoureurs {
-    private static ArrayList<Coureur> coureurs = new ArrayList<>();
-    private final Path path = Paths.get("course.txt");
+    private static final ArrayList<Coureur> coureurs = new ArrayList<>();
+    private static final Path path = Paths.get("course.txt");
     static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    public static void sortNomCroissant(){
+        coureurs.sort(Comparator.comparing(Coureur::getNom));
+    }
+
+    public static void sortNomDecroissant() {
+        coureurs.sort(Comparator.comparing(Coureur::getNom).reversed());
+    }
 
     public static void sortPrenomDecroissant() {
         coureurs.sort(Comparator.comparing(Coureur::getPrenom).reversed());
-        coureurs.forEach(coureur -> {
-            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
-        });
     }
 
     public static void sortPrenomCroissant() {
         coureurs.sort(Comparator.comparing(Coureur::getPrenom));
-        coureurs.forEach(coureur -> {
-            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
-        });
     }
 
-
-    public ArrayList<Coureur> getCoureurs() {
-        return coureurs;
+    public static void sortClassementCroissant() {
+        coureurs.sort(Comparator.comparing(Coureur::getCategorie));
     }
 
-    public void setCoureurs(ArrayList<Coureur> coureurs) {
-        this.coureurs = coureurs;
+    public static void sortClassementDecroissant() {
+        coureurs.sort(Comparator.comparing(Coureur::getCategorie).reversed());
     }
 
-    private void lectureFichier() throws IOException {
-        BufferedReader br = Files.newBufferedReader(path);
-        while(br.ready()){
-            String ligne = br.readLine();
-            ajouterListe(ligne);
+    public static void addCoureur() {
+        System.out.println("De quel genre est le joueur ?");
+        String genre = In.readString().toUpperCase();
+        System.out.println("Quel est le nom du joueur ?");
+        String nom = In.readString().toUpperCase();
+        System.out.println("Quel est le prenom du joueur ?");
+        String prenom = In.readString().trim();
+        prenom = prenom.substring(0, 1).toUpperCase() + prenom.substring(1).toLowerCase();
+        System.out.println("Quel est le classement du joueur ?");
+        String classement = In.readString();
+        System.out.println("Quel est le temps du joueur ? (en secondes)");
+        String temps = In.readString();
+        Coureur coureur = new Coureur(Genre.valueOf(genre.trim()),nom.trim(),prenom.trim(),Categorie.valueOf(classement.trim()),LocalTime.ofSecondOfDay(Integer.parseInt(temps.trim())));
+        coureurs.add(coureur);
+    }
+
+    public static void deleteCoureur() {
+        System.out.println("Quel est le numéro/ligne du joueur que vous voulez suprimer ?");
+        int numero = In.readInteger();
+        coureurs.remove(numero-1);
+    }
+
+    public static void editCoureur() {
+        System.out.println("Quel est le numéro/ligne du joueur que vous voulez modifier ?");
+        int numero = In.readInteger();
+        Coureur coureur = coureurs.get(numero-1);
+        System.out.println("""
+                    Que voulez vous modifier ?
+                1   Genre
+                2   Nom
+                3   Prenom
+                4   Classement
+                5   Temps
+                """);
+        int modification = In.readInteger();
+        switch (modification) {
+            case 1:
+                System.out.println("Quel est le genre du coureur ?");
+                String genre = In.readString().trim().toUpperCase();
+                coureur = new Coureur(Genre.valueOf(genre), coureur.getNom(), coureur.getPrenom(), coureur.getCategorie(), coureur.getTemps());
+                break;
+            case 2:
+                System.out.println("Quel est le nom du coureur ?");
+                String nom = In.readString().trim().toUpperCase();
+                coureur = new Coureur(coureur.getGenre(), nom , coureur.getPrenom(), coureur.getCategorie(), coureur.getTemps());
+                break;
+            case 3:
+                System.out.println("Quel est le prenom du coureur ?");
+                String prenom = In.readString().trim().toUpperCase();
+                coureur = new Coureur(coureur.getGenre(), coureur.getNom() , prenom, coureur.getCategorie(), coureur.getTemps());
+                break;
+            case 4:
+                System.out.println("Quel est le categorie du coureur ?");
+                String categorie = In.readString().trim().toUpperCase();
+                coureur = new Coureur(coureur.getGenre(), coureur.getNom() , coureur.getPrenom(), Categorie.valueOf(categorie), coureur.getTemps());
+                break;
+
+            case 5:
+                System.out.println("Quel est le temps du coureur ? (en secondes)");
+                String temps = In.readString().trim();
+                coureur = new Coureur(coureur.getGenre(), coureur.getNom() , coureur.getPrenom(), coureur.getCategorie(), LocalTime.ofSecondOfDay(Integer.parseInt(temps)));
+                break;
+            default:
+                coureur = coureurs.get(numero-1);
         }
+        coureurs.set(numero-1,coureur);
     }
+
+    public static void saveCoureur() throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter("courseFinal.txt"));
+        for (Coureur coureur : coureurs) {
+            writer.write(coureur.getGenre() + ", " + coureur.getNom() + ", " + coureur.getPrenom() + ", " + coureur.getCategorie() + ", " + dtf.format(coureur.getTemps()));
+            writer.newLine();
+        }
+        writer.close();
+    }
+
 
     private void ajouterListe(String ligne) {
         if(ligne != null){
@@ -56,25 +128,17 @@ public class GestionDesCoureurs {
         }
     }
 
-
+    private void lectureFichier() throws IOException {
+        BufferedReader br = Files.newBufferedReader(path);
+        while(br.ready()){
+            String ligne = br.readLine();
+            ajouterListe(ligne);
+        }
+        br.close();
+    }
 
     public GestionDesCoureurs() throws IOException {
         lectureFichier();
     }
-
-    public static void sortNomCroissant(){
-        coureurs.sort(Comparator.comparing(Coureur::getNom));
-        coureurs.forEach(coureur -> {
-            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),coureur.getTemps());
-        });
-    }
-
-    public static void sortNomDecroissant() {
-        coureurs.sort(Comparator.comparing(Coureur::getNom).reversed());
-        coureurs.forEach(coureur -> {
-            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
-        });
-    }
-
 
 }

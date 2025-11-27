@@ -1,6 +1,5 @@
 package fr.btsciel;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 
 public class Coureur extends Personne{
