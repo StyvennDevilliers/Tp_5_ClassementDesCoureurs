@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -115,6 +116,29 @@ public class GestionDesCoureurs {
             writer.newLine();
         }
         writer.close();
+    }
+
+    public static void calculDiffTemps() {
+        System.out.println("Quelle est la ligne du premier coureur ?");
+        int index1 = In.readInteger();
+        System.out.println("Quelle est la ligne du deuxieme coureur ?");
+        int index2 = In.readInteger();
+        if (index1-1 < index2-1) {
+            LocalTime t1 = coureurs.get(index1-1).getTemps();
+            LocalTime t2 = coureurs.get(index2-1).getTemps();
+            int ecart = t1.getSecond() - t2.getSecond();
+            System.out.println("L'ecart entre les deux coureurs est de : " + dtf.format(LocalTime.ofSecondOfDay(ecart)));
+
+        }else if (index2-1 < index1-1) {
+            LocalTime t1 = coureurs.get(index2-1).getTemps();
+            LocalTime t2 = coureurs.get(index1-1).getTemps();
+            int ecart = t1.getSecond() - t2.getSecond();
+            System.out.println("L'ecart entre les deux coureurs est de : -" + dtf.format(LocalTime.ofSecondOfDay(ecart)));
+
+        }else {
+            System.out.println("Ce sont les memes coureurs il n'y a donc pas d'ecart.");
+        }
+
     }
 
 
