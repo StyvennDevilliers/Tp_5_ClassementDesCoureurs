@@ -15,6 +15,7 @@ public class Ihm {
         while(boucle) {
             try {
                 System.out.println("""
+                        
                         1   Afficher par ordre alphabétique de leur nom croissant
                         2   Afficher par ordre alphabétique de leur nom décroissant
                         3   Afficher par ordre alphabétique de leur prénom croissant
@@ -26,6 +27,7 @@ public class Ihm {
                         9   Modifier un coureur
                         10  Sauvegarder la liste des coureurs
                         11  Fin programme
+                        
                         """);
                 switch (In.readInteger()) {
                     case 1:

@@ -18,26 +18,44 @@ public class GestionDesCoureurs {
 
     public static void sortNomCroissant(){
         coureurs.sort(Comparator.comparing(Coureur::getNom));
+        coureurs.forEach(coureur -> {
+            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
+        });
     }
 
     public static void sortNomDecroissant() {
         coureurs.sort(Comparator.comparing(Coureur::getNom).reversed());
+        coureurs.forEach(coureur -> {
+            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
+        });
     }
 
     public static void sortPrenomDecroissant() {
         coureurs.sort(Comparator.comparing(Coureur::getPrenom).reversed());
+        coureurs.forEach(coureur -> {
+            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
+        });
     }
 
     public static void sortPrenomCroissant() {
         coureurs.sort(Comparator.comparing(Coureur::getPrenom));
+        coureurs.forEach(coureur -> {
+            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
+        });
     }
 
     public static void sortClassementCroissant() {
         coureurs.sort(Comparator.comparing(Coureur::getCategorie));
+        coureurs.forEach(coureur -> {
+            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
+        });
     }
 
     public static void sortClassementDecroissant() {
         coureurs.sort(Comparator.comparing(Coureur::getCategorie).reversed());
+        coureurs.forEach(coureur -> {
+            System.out.printf("%-10s  %-10s\t%-10s\t\t\t%-10s\t%-10s\n",coureur.getGenre(),coureur.getNom(),coureur.getPrenom(),coureur.getCategorie(),dtf.format(coureur.getTemps()));
+        });
     }
 
     public static void addCoureur() {
@@ -49,10 +67,11 @@ public class GestionDesCoureurs {
         String prenom = In.readString().trim();
         prenom = prenom.substring(0, 1).toUpperCase() + prenom.substring(1).toLowerCase();
         System.out.println("Quel est le classement du joueur ?");
-        String classement = In.readString();
+        String classement = In.readString().trim();
+        classement = classement.substring(0, 1).toUpperCase() + classement.substring(1);
         System.out.println("Quel est le temps du joueur ? (en secondes)");
         String temps = In.readString();
-        Coureur coureur = new Coureur(Genre.valueOf(genre.trim()),nom.trim(),prenom.trim(),Categorie.valueOf(classement.trim()),LocalTime.ofSecondOfDay(Integer.parseInt(temps.trim())));
+        Coureur coureur = new Coureur(Genre.valueOf(genre.trim()),nom.trim(),prenom.trim(),Categorie.valueOf(classement),LocalTime.ofSecondOfDay(Integer.parseInt(temps.trim())));
         coureurs.add(coureur);
     }
 
@@ -122,7 +141,7 @@ public class GestionDesCoureurs {
         if(ligne != null){
             String[] monTableau = ligne.split(",");
             if(monTableau.length == 5){
-                Coureur coureur = new Coureur(Genre.valueOf(monTableau[0].trim()),monTableau[1],monTableau[2],Categorie.valueOf(monTableau[3].trim()),LocalTime.ofSecondOfDay(Integer.parseInt(monTableau[4].trim())));
+                Coureur coureur = new Coureur(Genre.valueOf(monTableau[0].trim()),monTableau[1].trim(),monTableau[2].trim(),Categorie.valueOf(monTableau[3].trim()),LocalTime.ofSecondOfDay(Integer.parseInt(monTableau[4].trim())));
                 coureurs.add(coureur);
             }
         }
